@@ -1,0 +1,57 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: worker-consumer
+
+  data:
+    mongodb:
+      uri: mongodb://${MONGO_USER:messaging_user}:${MONGO_PASSWORD:messaging_pass}@${MONGO_HOST:localhost}:${MONGO_PORT:27017}/${MONGO_DATABASE:messaging_db}?authSource=admin
+
+  rabbitmq:
+    host: ${RABBITMQ_HOST:localhost}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USER:guest}
+    password: ${RABBITMQ_PASSWORD:guest}
+    virtual-host: /
+    listener:
+      simple:
+        acknowledge-mode: manual
+        prefetch: 10
+
+app:
+  rabbitmq:
+    exchange: messaging.exchange
+    queue: messaging.queue
+    routing-key: messaging.routing.key
+    retry-queue: messaging.retry.queue
+    retry-exchange: messaging.retry.exchange
+    retry-routing-key: messaging.retry.routing.key
+    dlq-queue: messaging.dlq.queue
+    dlq-exchange: messaging.dlq.exchange
+    dlq-routing-key: messaging.dlq.routing.key
+    retry-ttl: 5000
+    max-retries: 3
+  rules:
+    max-messages-per-destination: 3
+    time-window-hours: 24
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus,metrics
+  metrics:
+    tags:
+      application: worker-consumer
+  tracing:
+    sampling:
+      probability: 1.0
+
+logging:
+  level:
+    com.aldeamo.messaging: DEBUG
+    org.springframework.amqp: INFO
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] [%X{traceId:-}] %-5level %logger{36} - %msg%n"
