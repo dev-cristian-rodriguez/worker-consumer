@@ -53,5 +53,6 @@ logging:
   level:
     com.aldeamo.messaging: DEBUG
     org.springframework.amqp: INFO
+    org.mongodb.driver: WARN
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] [%X{traceId:-}] %-5level %logger{36} - %msg%n"
