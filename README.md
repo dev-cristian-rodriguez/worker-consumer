@@ -60,7 +60,7 @@ Deberias ver 3 containers activos: `worker-consumer-app`, `worker-consumer-mongo
 
 | Servicio | Usuario | Password |
 |----------|---------|----------|
-| Mongo Express | - | Sin autenticacion |
+| Mongo Express | `admin` | `pass` (default) |
 | RabbitMQ | `guest` | `guest` |
 
 ## Endpoints
@@ -161,3 +161,26 @@ Coleccion: `messages`
 | processingTime | Long | Tiempo de procesamiento en milisegundos |
 | createdDate | LocalDateTime | Fecha de creacion |
 | error | String | Error de logica de negocio (null si exitoso) |
+
+## Observabilidad
+
+```bash
+# Health check
+curl http://localhost:8081/actuator/health
+
+# Metricas Prometheus
+curl http://localhost:8081/actuator/prometheus
+```
+
+Metricas personalizadas:
+- `messages.processed` - Total de mensajes procesados exitosamente
+- `messages.rate_limited` - Total de mensajes rechazados por rate limit
+- `messages.processing.time` - Tiempo de procesamiento por mensaje
+
+## Colas RabbitMQ
+
+| Cola | Descripcion |
+|------|-------------|
+| `messaging.queue` | Cola principal de mensajes |
+| `messaging.retry.queue` | Cola de reintentos (TTL: 5s) |
+| `messaging.dlq.queue` | Dead Letter Queue (mensajes fallidos) |
